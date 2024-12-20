@@ -21,7 +21,7 @@ public class InvestorCashBalanceServiceImpl implements InvestorCashBalanceServic
 
     @Override
     public InvestorCashBalance getCashBalance(Long investorId) {
-        System.out.println("InvetorId is : " + investorId);
+        
         CsInvestorCashBalanceEntity cashBalance = investorCashBalanceRepository.findByInvestorIdAndStatus(investorId, "A");
         if (cashBalance == null) throw new ValidationException("User Id not found");
         InvestorCashBalance rs = new InvestorCashBalance();
