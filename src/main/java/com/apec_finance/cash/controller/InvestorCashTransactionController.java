@@ -1,7 +1,7 @@
 package com.apec_finance.cash.controller;
 
 import com.apec_finance.cash.comon.ResponseBuilder;
-import com.apec_finance.cash.model.InvestorCashBalance;
+import com.apec_finance.cash.model.InvestorCashTransaction;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
 import com.apec_finance.cash.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
@@ -14,14 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/investor-cash-balance")
 @RequiredArgsConstructor
-public class InvestorCashBalanceController {
-    private final InvestorCashBalanceService investorCashBalanceService;
+public class InvestorCashTransactionController {
+    private final InvestorCashTransactionService InvestorCashTransactionService;
 
-    @GetMapping("/get")
-    public ResponseBuilder<InvestorCashBalance> getCashBalance(KeycloakService keycloakService) {
-        InvestorCashBalance rs = investorCashBalanceService.getCashBalance(keycloakService.getInvestorIdFromToken());
-        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", rs);
-    }
 
-    
 }
