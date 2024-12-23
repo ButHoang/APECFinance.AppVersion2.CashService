@@ -27,8 +27,10 @@ public class InvestorCashTransactionController {
     @PostMapping("/add")
     public ResponseBuilder<String> addCashTransaction(@RequestBody AddCashTransactionRequest request ,  KeycloakService keycloakService) {
         BigDecimal tranAmount = request.getTranAmount();
-        System.out.println("tranAmount is : " + tranAmount);
-        String rs = InvestorCashTransactionService.addCashTransaction(keycloakService.getInvestorIdFromToken(), tranAmount);
+        // System.out.println("tranAmount is : " + tranAmount);
+        int count = InvestorCashTransactionService.countTransactionToday();
+        System.out.println("count is : " + count);
+        // String rs = InvestorCashTransactionService.addCashTransaction(keycloakService.getInvestorIdFromToken(), tranAmount , count);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", "success"  );
     }
 }

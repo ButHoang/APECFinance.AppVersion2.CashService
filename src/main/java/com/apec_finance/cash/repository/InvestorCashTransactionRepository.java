@@ -26,4 +26,11 @@ public interface InvestorCashTransactionRepository extends JpaRepository<CsInves
         @Param("tranAmount") BigDecimal tranAmount,
         @Param("status") String status
     );
+
+    @Query(
+        value = "SELECT count(*) FROM cs_investor_cash_transaction WHERE tran_date = CURRENT_DATE",
+        nativeQuery = true
+    )
+    int countTransactionToday();
+    
 }

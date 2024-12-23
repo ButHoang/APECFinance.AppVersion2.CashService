@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +22,23 @@ public class InvestorCashTransactionServiceImpl implements InvestorCashTransacti
     private final InvestorCashTransactionRepository investorCashTransactionRepository;
 
     @Override
-    public String addCashTransaction(Long investorId ,BigDecimal tranAmount) {
-        System.out.println("tranamount is : " + tranAmount);
-        investorCashTransactionRepository.addCashTransactionEntity(investorId, "asdasd" , "IN" , "+" , tranAmount, "A");
+    public String addCashTransaction(Long investorId ,BigDecimal tranAmount , int tran_count) {
+
+        LocalDate currentDate = LocalDate.now();
+        // int currentDay = currentDate.getDayOfMonth();
+        // int currentMonth = currentDate.getMonthValue();
+        // int currentYear = currentDate.getYear();
+        String dayString = String.valueOf(currentDate.getDayOfMonth());
+        String monthString = String.valueOf(currentDate.getMonthValue());
+        String yearString = String.valueOf(currentDate.getYear());
+
+
+        String tran_no = "IN" + yearString + monthString + dayString ;
+
+        investorCashTransactionRepository.addCashTransactionEntity(investorId, tran_no , "IN" , "+" , tranAmount, "A");
+        
         // if (cashBalance == null) throw new ValidationException("User Id not found");
         // InvestorCashBalance rs = new InvestorCashBalance();
-
         // BigDecimal totalBalance = BigDecimal.valueOf(cashBalance.getBalance() + cashBalance.getHoldBalance());
         // rs.setTotalBalance(setTotalBalance(totalBalance));
         // String rs = "Success";
@@ -35,6 +47,11 @@ public class InvestorCashTransactionServiceImpl implements InvestorCashTransacti
 
     public BigDecimal setTotalBalance(BigDecimal totalBalance) {
         return totalBalance.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    @Override
+    public int countTransactionToday() {
+        return investorCashTransactionRepository.countTransactionToday();
     }
 
     

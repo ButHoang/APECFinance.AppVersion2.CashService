@@ -5,5 +5,6 @@ import java.math.BigDecimal;
 import com.apec_finance.cash.model.InvestorCashTransaction;
 
 public interface InvestorCashTransactionService {
-    String addCashTransaction(Long investorId , BigDecimal tranAmount);
+    String addCashTransaction(Long investorId , BigDecimal tranAmount , int tran_count);
+    int countTransactionToday();
 }
