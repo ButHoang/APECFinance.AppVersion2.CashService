@@ -10,6 +10,10 @@ public interface InvestorCashBalanceRepository extends JpaRepository<CsInvestorC
     CsInvestorCashBalanceEntity findByInvestorId(Long investorId);
     @Query("SELECT c FROM CsInvestorCashBalanceEntity c WHERE c.investorId = :investorId AND c.status = :status and c.deleted = 0")
     CsInvestorCashBalanceEntity findByInvestorIdAndStatus(@Param("investorId") Long investorId, @Param("status") String status);
+
+    @Query("SELECT c.balance FROM CsInvestorCashBalanceEntity c WHERE c.investorId = :investorId AND c.status = 'A'")
+    float findBalanceByInvestorIdAndStatus(@Param("investorId") Long investorId);
+
 }
 
 
