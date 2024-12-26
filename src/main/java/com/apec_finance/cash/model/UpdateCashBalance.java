@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class UpdateCashBalance {
     private Long investorId;
-    private Long balance;
-    private Long holdBalance;
+    private Float paidAmount;
+    private String createdBy;
 }

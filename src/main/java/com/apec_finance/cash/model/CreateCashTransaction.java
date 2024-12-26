@@ -10,12 +10,12 @@ import java.time.LocalTime;
 public class CreateCashTransaction {
     private LocalDate tranDate;
     private LocalDateTime tranTime;
-    private String tranNo;
     private String tranType;
     private String opr;
     private Float tranAmount;
     private Long refId;
     private String refNo;
     private String status;
-
+    private Long investorId;
+    private String createdBy;
 }

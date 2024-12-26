@@ -39,7 +39,20 @@ public class InvestorCashBalanceServiceImpl implements InvestorCashBalanceServic
     @Override
     public void updateCashBalance(UpdateCashBalance updateCashBalance) {
         CsInvestorCashBalanceEntity investorCashBalanceEntity = investorCashBalanceRepository.findByInvestorId(updateCashBalance.getInvestorId());
-        investorCashBalanceMapper.updateEntity(updateCashBalance, investorCashBalanceEntity);
+        investorCashBalanceEntity.setCreatedBy(updateCashBalance.getCreatedBy());
+
+        Float currentBalance = investorCashBalanceEntity.getBalance();
+        Float paidAmount = updateCashBalance.getPaidAmount();
+        Float currentHoldBalance = investorCashBalanceEntity.getHoldBalance();
+
+        if (currentBalance > paidAmount) {
+            investorCashBalanceEntity.setBalance(currentBalance - paidAmount);
+            investorCashBalanceEntity.setHoldBalance(currentHoldBalance + paidAmount);
+        } else {
+            return;
+        }
+
+
         investorCashBalanceRepository.save(investorCashBalanceEntity);
     }
 

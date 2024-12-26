@@ -3,18 +3,22 @@ package com.apec_finance.cash.entity;
 import com.apec_finance.cash.comon.BaseEntity;
 import lombok.Data;
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Data
 @Entity
 @Table(name = "cs_investor_cash_transaction")
 public class InvestorCashTransactionEntity extends BaseEntity {
+    @Column(name = "investor_id", nullable = false)
+    private Long investorId;
 
     @Column(nullable = false)
-    private String tranDate; // Ngày giao dịch (yyyy-MM-dd)
+    private LocalDate tranDate; // Ngày giao dịch (yyyy-MM-dd)
 
     @Column(nullable = false)
-    private OffsetDateTime tranTime; // Thời gian giao dịch (bao gồm giờ phút giây)
+    private LocalDateTime tranTime; // Thời gian giao dịch (bao gồm giờ phút giây)
 
     @Column(nullable = false, length = 50)
     private String tranNo; // Mã giao dịch
