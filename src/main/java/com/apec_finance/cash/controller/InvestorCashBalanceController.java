@@ -8,6 +8,7 @@ import com.apec_finance.cash.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.apec_finance.cash.model.CreateCashBalance;
 
 import java.math.BigDecimal;
 
@@ -31,6 +32,12 @@ public class InvestorCashBalanceController {
     @PostMapping("/update")
     public ResponseBuilder<Void> updateBalance(@RequestBody UpdateCashBalance updateCashBalance) {
         investorCashBalanceService.updateCashBalance(updateCashBalance);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    }
+    @PostMapping("/create")
+    public ResponseBuilder<Void> createBalance(@RequestBody CreateCashBalance investorId) {
+        System.out.println(investorId);
+        investorCashBalanceService.createCashBalance(investorId);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
 }

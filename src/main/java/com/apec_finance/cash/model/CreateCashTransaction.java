@@ -19,3 +19,5 @@ public class CreateCashTransaction {
     private Long investorId;
     private String createdBy;
 }
+
+

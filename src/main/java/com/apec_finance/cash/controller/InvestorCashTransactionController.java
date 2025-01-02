@@ -23,4 +23,10 @@ public class InvestorCashTransactionController {
         investorCashTransactionService.createCashTransaction(createCashTransaction);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
+
+    @PostMapping("/withdrawal")
+    public ResponseBuilder<Void> createWithdrawalTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
+        investorCashTransactionService.createWithdrawalTransaction(createCashTransaction);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    }
 }

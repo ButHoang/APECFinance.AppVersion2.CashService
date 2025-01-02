@@ -34,6 +34,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  
+  feign:
+      client:
+        config:
+          cash-client:
+            url: ${CASH_CLIENT_URL:http://10.0.0.80:8090/v2/api/apec-finance/cash}
+          app-client:
+            url: ${APP_CLIENT_URL:https://api-gateway-test.apecgroup.net/apf-v2/app}
 
   security:
     oauth2:
@@ -49,6 +57,8 @@ spring:
       credentials:
         secret: ${SPRING_SECURITY_KEYCLOAK_CREDENTIALS_SECRET:UEM6v6kLpmDee1oTQgcclgsVR1jiXmdL}
       use-resource-role-mappings: ${SPRING_SECURITY_KEYCLOAK_USE_RESOURCE_ROLE_MAPPINGS:true}
+  
+    
 
 server:
   port: 8081
