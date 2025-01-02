@@ -36,7 +36,6 @@ public class InvestorCashBalanceController {
     }
     @PostMapping("/create")
     public ResponseBuilder<Void> createBalance(@RequestBody CreateCashBalance investorId) {
-        System.out.println(investorId);
         investorCashBalanceService.createCashBalance(investorId);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
