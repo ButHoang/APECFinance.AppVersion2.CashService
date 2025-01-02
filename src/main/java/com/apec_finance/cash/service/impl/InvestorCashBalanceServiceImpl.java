@@ -64,6 +64,11 @@ public class InvestorCashBalanceServiceImpl implements InvestorCashBalanceServic
     }
 
     public void createCashBalance(CreateCashBalance investorId ) {
+        CsInvestorCashBalanceEntity existCashBalance = investorCashBalanceRepository.findByInvestorId(investorId.getInvestorId());
+        if (existCashBalance != null) {
+            System.out.println("Investor cash balance already exist");
+            return;
+        }
         CsInvestorCashBalanceEntity investorCashBalanceEntity = new CsInvestorCashBalanceEntity();
         investorCashBalanceEntity.setInvestorAccountNo(investorId.getAccountNo());
         investorCashBalanceEntity.setInvestorId(investorId.getInvestorId());
