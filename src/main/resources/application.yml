@@ -22,10 +22,10 @@ spring:
       message: ${SPRING_RABBITMQ_EXCHANGE_MESSAGE:TX_HNX_SEND_MESSAGE}
 
   redis:
-    host: ${SPRING_REDIS_HOST:10.0.0.187}
+    host: ${SPRING_REDIS_HOST:10.0.230.41}
     port: ${SPRING_REDIS_PORT:6379}
-    username: ${SPRING_REDIS_USERNAME:shm_digital}
-    password: ${SPRING_REDIS_PASSWORD:Apec*@2024}
+    username: ${SPRING_REDIS_USERNAME:}
+    password: ${SPRING_REDIS_PASSWORD:}
 
   jpa:
     hibernate:

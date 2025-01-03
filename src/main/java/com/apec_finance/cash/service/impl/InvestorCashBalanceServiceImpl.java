@@ -47,13 +47,15 @@ public class InvestorCashBalanceServiceImpl implements InvestorCashBalanceServic
         Float currentBalance = investorCashBalanceEntity.getBalance();
         Float paidAmount = updateCashBalance.getPaidAmount();
         Float currentHoldBalance = investorCashBalanceEntity.getHoldBalance();
+        if (updateCashBalance.getType().equals("DEPOSIT")) {
+            if (currentBalance > paidAmount) {
+                investorCashBalanceEntity.setBalance(currentBalance - paidAmount);
+                investorCashBalanceEntity.setHoldBalance(currentHoldBalance + paidAmount);
+            } else {
+                return;
+            }
+        } else investorCashBalanceEntity.setHoldBalance(currentHoldBalance + paidAmount);
 
-        if (currentBalance > paidAmount) {
-            investorCashBalanceEntity.setBalance(currentBalance - paidAmount);
-            investorCashBalanceEntity.setHoldBalance(currentHoldBalance + paidAmount);
-        } else {
-            return;
-        }
         investorCashBalanceRepository.save(investorCashBalanceEntity);
     }
 

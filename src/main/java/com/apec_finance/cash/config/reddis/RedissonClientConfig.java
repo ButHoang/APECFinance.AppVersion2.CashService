@@ -27,9 +27,14 @@ public class RedissonClientConfig {
 
     @Bean
     RedissonClient redissonClient() {
-        config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort)
-                .setUsername(redisUserName)
-                .setPassword(redisPassword);
+        config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort);
+        if (redisUserName != null && !redisUserName.trim().isEmpty()) {
+            config.useSingleServer().setUsername(redisUserName);
+        }
+
+        if (redisPassword != null && !redisPassword.trim().isEmpty()) {
+            config.useSingleServer().setPassword(redisPassword);
+        }
         config.setCodec(new StringCodec()).useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort);
         return Redisson.create(config);
     }
