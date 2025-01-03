@@ -3,6 +3,7 @@ package com.apec_finance.cash.service;
 import com.apec_finance.cash.config.FormFeignEncoderConfig;
 import com.apec_finance.cash.model.InvestorBankAcc;
 import com.apec_finance.cash.model.RsInvestorBankAcc;
+import com.apec_finance.cash.model.RsTransactionRange;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,4 +16,7 @@ public interface AppClient {
 
     @GetMapping("/items/investors_bank_acc")
     RsInvestorBankAcc  getInvestorBankAcc(@RequestParam("filter[investor_id][_eq]") Long filter, @RequestParam String fields);
+
+    @GetMapping("/app-api/get_transaction_range")
+    RsTransactionRange getTransactionRange();
 }
