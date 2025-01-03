@@ -8,6 +8,7 @@ import com.apec_finance.cash.model.UpdateCashBalance;
 import com.apec_finance.cash.repository.InvestorCashBalanceRepository;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
 import com.apec_finance.cash.service.KeycloakService;
+import com.apec_finance.cash.model.CreateCashBalance;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ import java.text.DecimalFormat;
 public class InvestorCashBalanceServiceImpl implements InvestorCashBalanceService {
     private final InvestorCashBalanceRepository investorCashBalanceRepository;
     private final InvestorCashBalanceMapper investorCashBalanceMapper;
+    
+    // private final KeycloakService keycloakService;
 
     @Override
     public InvestorCashBalance getCashBalance(Long investorId) {
@@ -56,8 +59,25 @@ public class InvestorCashBalanceServiceImpl implements InvestorCashBalanceServic
         investorCashBalanceRepository.save(investorCashBalanceEntity);
     }
 
+    
+
     public BigDecimal setTotalBalance(BigDecimal totalBalance) {
         return totalBalance.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void createCashBalance(CreateCashBalance investorId ) {
+        CsInvestorCashBalanceEntity existCashBalance = investorCashBalanceRepository.findByInvestorId(investorId.getInvestorId());
+        if (existCashBalance != null) {
+            System.out.println("Investor cash balance already exist");
+            return;
+        }
+        CsInvestorCashBalanceEntity investorCashBalanceEntity = new CsInvestorCashBalanceEntity();
+        investorCashBalanceEntity.setInvestorAccountNo(investorId.getAccountNo());
+        investorCashBalanceEntity.setInvestorId(investorId.getInvestorId());
+        investorCashBalanceEntity.setBalance(0f);
+        investorCashBalanceEntity.setHoldBalance(0f);
+        investorCashBalanceEntity.setStatus("A");
+        investorCashBalanceRepository.save(investorCashBalanceEntity);
     }
 }
 
