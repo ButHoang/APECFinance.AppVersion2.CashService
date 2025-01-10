@@ -65,7 +65,9 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         RsInvestorBankAcc investorBankAccs = appClient.getInvestorBankAcc(keycloakService.getInvestorIdFromToken() ,  "*,bank_id.*");
         investorCashTransactionEntity.setBankAccount(investorBankAccs.getData().get(0).getBankAccount());
         investorCashTransactionEntity.setBankCode(investorBankAccs.getData().get(0).getBankId().getBankCode());
-        CsInvestorCashBalanceEntity csInvestorCashBalanceEntity = investorCashBalanceRepository.findByInvestorIdAndStatus(keycloakService.getInvestorIdFromToken(), "A");
+        System.out.println("Withdrawal transaction created successfully");
+        try{
+            CsInvestorCashBalanceEntity csInvestorCashBalanceEntity = investorCashBalanceRepository.findByInvestorIdAndStatus(keycloakService.getInvestorIdFromToken(), "A");
         float currentBalance = csInvestorCashBalanceEntity.getBalance();
         if (currentBalance < createCashTransaction.getTranAmount().floatValue()) {
             return;
@@ -74,10 +76,16 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         csInvestorCashBalanceEntity.setBalance(currentBalance - createCashTransaction.getTranAmount().floatValue());
         csInvestorCashBalanceEntity.setHoldBalance(currentHoldBalance + createCashTransaction.getTranAmount().floatValue());
         investorCashBalanceRepository.save(csInvestorCashBalanceEntity);
+        }
+        catch (Exception e){
+            System.out.println("Investor cash balance not found " + keycloakService.getInvestorIdFromToken());
+            return;
+        }
+        
         investorCashTransactionRepository.save(investorCashTransactionEntity);
-        System.out.println("Withdrawal transaction created successfully");
+        
         RsTransactionRange transactionRangeslist = appClient.getTransactionRange();
-        System.out.println("transactionRanges: " + transactionRangeslist);
+        
         LocalTime frTime = null;
         LocalTime toTime = null;
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
