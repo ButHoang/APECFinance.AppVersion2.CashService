@@ -10,4 +10,6 @@ import java.time.LocalDate;
 public interface InvestorCashTransactionRepository extends JpaRepository<InvestorCashTransactionEntity, Long> {
     @Query("SELECT COUNT(t) FROM InvestorCashTransactionEntity t WHERE t.tranDate = :tranDate AND t.tranType = :tranType")
     int countTransactionsByDateAndType(@Param("tranDate") LocalDate tranDate, @Param("tranType") String tranType);
+
+    InvestorCashTransactionEntity findByRefIdAndTranTypeAndOprAndDeleted(Long refId, String tranType, String opr, Integer deleted);
 }

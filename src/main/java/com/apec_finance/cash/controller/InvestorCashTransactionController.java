@@ -3,6 +3,7 @@ package com.apec_finance.cash.controller;
 import com.apec_finance.cash.comon.ResponseBuilder;
 import com.apec_finance.cash.model.CreateCashTransaction;
 import com.apec_finance.cash.model.UpdateCashBalance;
+import com.apec_finance.cash.model.VerifyCashTransaction;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
 import com.apec_finance.cash.service.InvestorCashTransactionService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,12 @@ public class InvestorCashTransactionController {
     @PostMapping("/create")
     public ResponseBuilder<Void> createCashTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
         investorCashTransactionService.createCashTransaction(createCashTransaction);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    }
+
+    @PostMapping("/verify")
+    public ResponseBuilder<Void> verifyCashTransaction(@RequestBody VerifyCashTransaction verifyCashTransaction) {
+        investorCashTransactionService.verifyCashTransaction(verifyCashTransaction);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
 }
