@@ -5,6 +5,7 @@ import com.apec_finance.cash.model.CreateCashTransaction;
 import com.apec_finance.cash.model.UpdateCashBalance;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
 import com.apec_finance.cash.service.InvestorCashTransactionService;
+import com.apec_finance.cash.model.CashTransactionHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,18 @@ public class InvestorCashTransactionController {
     @PostMapping("/withdrawal")
     public ResponseBuilder<Void> createWithdrawalTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
         investorCashTransactionService.createWithdrawalTransaction(createCashTransaction);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    }
+
+    @PostMapping("/deposit")
+    public ResponseBuilder<Void> createDepositCashTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
+        investorCashTransactionService.createDepositCashTransaction(createCashTransaction);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    }
+
+    @PostMapping("/history")
+    public ResponseBuilder<Void> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
+        investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.apec_finance.cash.service.KeycloakService;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
 import com.apec_finance.cash.entity.CsInvestorCashBalanceEntity;
+import com.apec_finance.cash.entity.CsInvestorCashBalanceHistoryEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,6 +23,8 @@ import java.util.List;
 import com.apec_finance.cash.model.RsInvestorBankAcc;
 import com.apec_finance.cash.model.RsTransactionRange;
 import com.apec_finance.cash.model.TransactionRange;
+import com.apec_finance.cash.repository.InvestorCashBalanceHistoryRepository;
+import com.apec_finance.cash.model.CashTransactionHistory;;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
     private final AppClient appClient;
     private final KeycloakService keycloakService;
     private final InvestorCashBalanceRepository investorCashBalanceRepository;
+    private final InvestorCashBalanceHistoryRepository investorCashBalanceHistoryRepository;
 
     @Override
     public void createCashTransaction(CreateCashTransaction createCashTransaction) {
@@ -65,7 +69,9 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         RsInvestorBankAcc investorBankAccs = appClient.getInvestorBankAcc(keycloakService.getInvestorIdFromToken() ,  "*,bank_id.*");
         investorCashTransactionEntity.setBankAccount(investorBankAccs.getData().get(0).getBankAccount());
         investorCashTransactionEntity.setBankCode(investorBankAccs.getData().get(0).getBankId().getBankCode());
-        CsInvestorCashBalanceEntity csInvestorCashBalanceEntity = investorCashBalanceRepository.findByInvestorIdAndStatus(keycloakService.getInvestorIdFromToken(), "A");
+        System.out.println("Withdrawal transaction created successfully");
+        try{
+            CsInvestorCashBalanceEntity csInvestorCashBalanceEntity = investorCashBalanceRepository.findByInvestorIdAndStatus(keycloakService.getInvestorIdFromToken(), "A");
         float currentBalance = csInvestorCashBalanceEntity.getBalance();
         if (currentBalance < createCashTransaction.getTranAmount().floatValue()) {
             return;
@@ -74,10 +80,16 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         csInvestorCashBalanceEntity.setBalance(currentBalance - createCashTransaction.getTranAmount().floatValue());
         csInvestorCashBalanceEntity.setHoldBalance(currentHoldBalance + createCashTransaction.getTranAmount().floatValue());
         investorCashBalanceRepository.save(csInvestorCashBalanceEntity);
+        }
+        catch (Exception e){
+            System.out.println("Investor cash balance not found " + keycloakService.getInvestorIdFromToken());
+            return;
+        }
+        
         investorCashTransactionRepository.save(investorCashTransactionEntity);
-        System.out.println("Withdrawal transaction created successfully");
+        
         RsTransactionRange transactionRangeslist = appClient.getTransactionRange();
-        System.out.println("transactionRanges: " + transactionRangeslist);
+        
         LocalTime frTime = null;
         LocalTime toTime = null;
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -89,8 +101,6 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
                 toTime = LocalTime.parse(transactionRange.getVarValue(), timeFormatter);
             }
         }
-        System.out.println("frTime: " + frTime);
-        System.out.println("toTime: " + toTime);
         if (frTime != null && toTime != null) {
             LocalTime currentTime = LocalTime.now();
             if (currentTime.isBefore(frTime) || currentTime.isAfter(toTime)) {
@@ -103,6 +113,35 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         }
     }
 
+    public void createDepositCashTransaction( CreateCashTransaction createCashTransaction) {
+        // CreateCashTransaction createCashTransaction = new CreateCashTransaction();
+        InvestorCashTransactionEntity investorCashTransactionEntity = investorCashTransactionMapper.toEntity(createCashTransaction);
+        investorCashTransactionEntity.setTranType("IN");
+        investorCashTransactionEntity.setOpr("+");
+        investorCashTransactionEntity.setStatus("A");
+        investorCashTransactionEntity.setTranNo(generateTransactionNumber(createCashTransaction.getTranType(), LocalDate.now()));
+        investorCashTransactionEntity.setCreatedBy("SYSTEM");
+        investorCashTransactionEntity.setTranDate(LocalDate.now());
+        investorCashTransactionEntity.setTranTime(LocalDateTime.now());
+        RsInvestorBankAcc investorBankAccs = appClient.getInvestorBankAcc(keycloakService.getInvestorIdFromToken() ,  "*,bank_id.*");
+        investorCashTransactionEntity.setBankAccount(investorBankAccs.getData().get(0).getBankAccount());
+        investorCashTransactionEntity.setBankCode(investorBankAccs.getData().get(0).getBankId().getBankCode());
+        // System.out.println("Deposit transaction created successfully");
+        try{
+            CsInvestorCashBalanceEntity csInvestorCashBalanceEntity = investorCashBalanceRepository.findByInvestorIdAndStatus(keycloakService.getInvestorIdFromToken(), "A");
+            float currentBalance = csInvestorCashBalanceEntity.getBalance();
+            csInvestorCashBalanceEntity.setBalance(currentBalance + createCashTransaction.getTranAmount().floatValue());
+            investorCashBalanceRepository.save(csInvestorCashBalanceEntity);
+        }
+        catch (Exception e){
+            System.out.println("Investor cash balance not found " + keycloakService.getInvestorIdFromToken());
+            return;
+        }
+        investorCashTransactionRepository.save(investorCashTransactionEntity);
+        // RsTransactionRange transactionRangeslist = appClient.getTransactionRange();
+    }
+    
+
     public void verifyCashTransaction(Long transaction_id){
         InvestorCashTransactionEntity existCashTransaction = investorCashTransactionRepository.findById(transaction_id).orElse(null); 
         if (existCashTransaction == null) {
@@ -114,9 +153,24 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         investorCashBalance.setHoldBalance(investorCashBalance.getHoldBalance() - existCashTransaction.getTranAmount().floatValue());
         investorCashBalanceRepository.save(investorCashBalance);
         investorCashTransactionRepository.save(existCashTransaction);
+    }
+
+    public void historyCashTransaction(CashTransactionHistory cashTransactionHistory){
         
-
-
+        String dateStartString = cashTransactionHistory.getDateStart();
+        LocalDate startDate = LocalDate.parse(dateStartString);
+        String dateEndString = cashTransactionHistory.getDateEnd();
+        LocalDate endDate = LocalDate.parse(dateEndString);
+        CsInvestorCashBalanceHistoryEntity  investorCashBalanceHistory  = investorCashBalanceHistoryRepository.findByInvestorIdAndTradingDate( keycloakService.getInvestorIdFromToken() , startDate );
+        if (investorCashBalanceHistory == null) {
+            System.out.println("Investor cash balance history not found");
+            return;
+        }
+        float current_balance = investorCashBalanceHistory.getBalance();
+        List<InvestorCashTransactionEntity> investorCashTransactionEntity = investorCashTransactionRepository.findTransactionsByDateTypeAndInvestor(keycloakService.getInvestorIdFromToken(), startDate, endDate, cashTransactionHistory.getTranType());
+        
+        
+        
 
     }
 }
