@@ -18,4 +18,6 @@ public interface InvestorCashTransactionRepository extends JpaRepository<Investo
         @Param("endDate") LocalDate endDate,
         @Param("tranTypes") List<String> tranTypes
     );
+
+    InvestorCashTransactionEntity findByRefIdAndTranTypeAndOprAndDeleted(Long refId, String tranType, String opr, Integer deleted);
 }
