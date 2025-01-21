@@ -249,8 +249,8 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
     }
     // System.out.println(cashTransactionHistory.getTranType());
     cashTransactionHistoryRes.removeIf(cashTransactionHistoryRes1 -> 
-    !cashTransactionHistory.getTranType().contains(cashTransactionHistoryRes1.getTranType())
-);
+        !cashTransactionHistory.getTranType().contains(cashTransactionHistoryRes1.getTranType())
+    );
 
     return cashTransactionHistoryRes;
     }
