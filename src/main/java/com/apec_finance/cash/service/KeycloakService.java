@@ -32,6 +32,16 @@ public class KeycloakService {
         String investorId = (String) jwt.getClaims().get("name");
         return investorId;
     }
+
+    public String getToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("No authentication found");
+        }
+
+        Jwt jwt = (Jwt) authentication.getCredentials();
+        return jwt.getTokenValue();
+    }
 }
 
 

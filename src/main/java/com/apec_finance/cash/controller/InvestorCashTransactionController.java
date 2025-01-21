@@ -7,7 +7,12 @@ import com.apec_finance.cash.model.VerifyCashTransaction;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
 import com.apec_finance.cash.service.InvestorCashTransactionService;
 import com.apec_finance.cash.model.CashTransactionHistory;
+import com.apec_finance.cash.model.CashTransactionHistoryRes;
+
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,9 +44,10 @@ public class InvestorCashTransactionController {
     }
 
     @PostMapping("/history")
-    public ResponseBuilder<Void> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
-        investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
-        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    public ResponseBuilder<List<CashTransactionHistoryRes>> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
+        // System.out.println(CashTransactionHistory);
+        List<CashTransactionHistoryRes> res =  investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", res);
     }
 
     @PostMapping("/verify")
