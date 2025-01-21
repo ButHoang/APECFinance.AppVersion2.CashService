@@ -3,8 +3,6 @@ package com.apec_finance.cash.service.impl;
 import com.apec_finance.cash.entity.InvestorCashTransactionEntity;
 import com.apec_finance.cash.mapper.InvestorCashTransactionMapper;
 import com.apec_finance.cash.model.CreateCashTransaction;
-import com.apec_finance.cash.model.InvestorBankAcc;
-import com.apec_finance.cash.model.InvestorCashBalance;
 import com.apec_finance.cash.repository.InvestorCashBalanceRepository;
 import com.apec_finance.cash.repository.InvestorCashTransactionRepository;
 import com.apec_finance.cash.service.AppClient;
@@ -12,14 +10,23 @@ import com.apec_finance.cash.service.InvestorCashTransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.apec_finance.cash.service.KeycloakService;
+import com.apec_finance.cash.service.TradingClient;
 import com.apec_finance.cash.service.InvestorCashBalanceService;
+import com.apec_finance.cash.comon.ResponseBuilder;
 import com.apec_finance.cash.entity.CsInvestorCashBalanceEntity;
 import com.apec_finance.cash.entity.CsInvestorCashBalanceHistoryEntity;
+import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import com.apec_finance.cash.model.CashTransactionHistoryRes;
+
+
 import com.apec_finance.cash.model.RsInvestorBankAcc;
 import com.apec_finance.cash.model.RsTransactionRange;
 import com.apec_finance.cash.model.TransactionRange;
@@ -35,6 +42,7 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
     private final KeycloakService keycloakService;
     private final InvestorCashBalanceRepository investorCashBalanceRepository;
     private final InvestorCashBalanceHistoryRepository investorCashBalanceHistoryRepository;
+    private final TradingClient tradingClient;
 
     @Override
     public void createCashTransaction(CreateCashTransaction createCashTransaction) {
@@ -155,22 +163,68 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         investorCashTransactionRepository.save(existCashTransaction);
     }
 
-    public void historyCashTransaction(CashTransactionHistory cashTransactionHistory){
-        
+    public List<CashTransactionHistoryRes> historyCashTransaction(CashTransactionHistory cashTransactionHistory){
         String dateStartString = cashTransactionHistory.getDateStart();
         LocalDate startDate = LocalDate.parse(dateStartString);
         String dateEndString = cashTransactionHistory.getDateEnd();
         LocalDate endDate = LocalDate.parse(dateEndString);
-        CsInvestorCashBalanceHistoryEntity  investorCashBalanceHistory  = investorCashBalanceHistoryRepository.findByInvestorIdAndTradingDate( keycloakService.getInvestorIdFromToken() , startDate );
-        if (investorCashBalanceHistory == null) {
-            System.out.println("Investor cash balance history not found");
-            return;
-        }
+        CsInvestorCashBalanceHistoryEntity investorCashBalanceHistory = investorCashBalanceHistoryRepository.findByInvestorIdAndTradingDate( keycloakService.getInvestorIdFromToken()  , startDate );
+        // , startDate
+        // if (investorCashBalanceHistory == null) {
+        //     System.out.println("Investor cash balance history not found");
+        //     return ;
+        // }
         float current_balance = investorCashBalanceHistory.getBalance();
-        List<InvestorCashTransactionEntity> investorCashTransactionEntity = investorCashTransactionRepository.findTransactionsByDateTypeAndInvestor(keycloakService.getInvestorIdFromToken(), startDate, endDate, cashTransactionHistory.getTranType());
-        
-        
-        
+        System.out.println(current_balance);
+        List<InvestorCashTransactionEntity> investorCashTransactionEntity = investorCashTransactionRepository.findTransactionsByDateTypeAndInvestor(keycloakService.getInvestorIdFromToken(), startDate, endDate);
+        // System.out.println(investorCashTransactionEntity );
+        String refIdsStr = "";
+        for (InvestorCashTransactionEntity transaction : investorCashTransactionEntity) {
+            if (transaction.getRefId() != null) {
+                // refIdList.add(transaction.getRefId());
+                if(refIdsStr.equals("")){
+                    refIdsStr += transaction.getRefId();
+                }
+                else{
+                    refIdsStr += "," + transaction.getRefId();
+                }
+            }
+        }
 
+        ResponseBuilder<Map<String, Integer>> responseRefIds = tradingClient.getProductIdsWithOrderIds("Bearer " + keycloakService.getToken(),refIdsStr);
+        // System.out.println(responseRefIds.getResult());
+        List<CashTransactionHistoryRes> cashTransactionHistoryRes = new ArrayList<>();
+        for (InvestorCashTransactionEntity transaction : investorCashTransactionEntity){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            LocalDateTime combinedDateTime = LocalDateTime.of(
+                transaction.getTranDate(),
+                transaction.getTranTime().toLocalTime()
+            );
+            String formattedDateTime = combinedDateTime.format(formatter);
+
+            CashTransactionHistoryRes cashTransactionHistoryRes1 = new CashTransactionHistoryRes();
+            
+            cashTransactionHistoryRes1.setCreatedDate(formattedDateTime);
+            cashTransactionHistoryRes1.setTranType(transaction.getTranType());
+            cashTransactionHistoryRes1.setTranAmount(BigDecimal.valueOf(transaction.getTranAmount()));
+            cashTransactionHistoryRes1.setDescription(transaction.getDescription());
+            cashTransactionHistoryRes1.setProductId(transaction.getRefId() != null ? responseRefIds.getResult().get(String.valueOf(transaction.getRefId())) : null);
+            cashTransactionHistoryRes1.setOpr(transaction.getOpr());
+            
+            if ("+".equals(transaction.getOpr())) {
+                current_balance += transaction.getTranAmount().floatValue();
+
+            } else {
+                current_balance -= transaction.getTranAmount().floatValue();
+            }
+            cashTransactionHistoryRes1.setBalanceAfTrans(BigDecimal.valueOf(current_balance));
+            cashTransactionHistoryRes.add(cashTransactionHistoryRes1);
+    }
+    // System.out.println(cashTransactionHistory.getTranType());
+    cashTransactionHistoryRes.removeIf(cashTransactionHistoryRes1 -> 
+    !cashTransactionHistory.getTranType().contains(cashTransactionHistoryRes1.getTranType())
+);
+
+    return cashTransactionHistoryRes;
     }
 }
