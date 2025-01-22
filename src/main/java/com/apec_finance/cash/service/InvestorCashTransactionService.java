@@ -13,5 +13,6 @@ public interface InvestorCashTransactionService {
     void createWithdrawalTransaction(CreateCashTransaction createCashTransaction);
     void createDepositCashTransaction(CreateCashTransaction createCashTransaction);
     List<CashTransactionHistoryRes> historyCashTransaction(CashTransactionHistory cashTransactionHistory);
-    void verifyCashTransaction(VerifyCashTransaction verifyCashTransaction);
+    void verifyDepositStockCashTransaction(VerifyCashTransaction verifyCashTransaction);
+    void verifyWithDrawStockCashTransaction(VerifyCashTransaction verifyCashTransaction);
 }
