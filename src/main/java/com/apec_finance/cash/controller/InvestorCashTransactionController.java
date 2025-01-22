@@ -26,6 +26,9 @@ public class InvestorCashTransactionController {
     @PostMapping("/verify")
     public ResponseBuilder<Void> verifyCashTransaction(@RequestBody VerifyCashTransaction verifyCashTransaction) {
         investorCashTransactionService.verifyCashTransaction(verifyCashTransaction);
+        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
+    }
+
     @PostMapping("/withdrawal")
     public ResponseBuilder<Void> createWithdrawalTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
         investorCashTransactionService.createWithdrawalTransaction(createCashTransaction);
@@ -49,6 +52,7 @@ public class InvestorCashTransactionController {
         investorCashTransactionService.verifyDepositStockCashTransaction(verifyCashTransaction);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
+
     @PostMapping("/verify/withdraw-stock")
     public ResponseBuilder<Void> verifyWithdrawStockCashTransaction(@RequestBody VerifyCashTransaction verifyCashTransaction) {
         investorCashTransactionService.verifyWithDrawStockCashTransaction(verifyCashTransaction);
