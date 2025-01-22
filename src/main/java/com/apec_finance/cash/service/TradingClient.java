@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient(name = "trading-client", url = "${spring.feign.client.config.trading-client.url}", configuration = FormFeignEncoderConfig.class)
 public interface TradingClient {
 
-    @GetMapping("/order/product-id?orderIds={orderIds}")
-    ResponseBuilder<Map<String, Integer>> getProductIdsWithOrderIds(@RequestHeader("Authorization") String token,  @RequestParam("orderIds") String orderIds);
+    @GetMapping("/order/product-id?orderIds={orderIdss}")
+    ResponseBuilder<Map<String, Integer>> getProductIdsWithOrderIds(@RequestHeader("Authorization") String token,  @RequestParam("orderIdss") String orderIds);
 
 }
