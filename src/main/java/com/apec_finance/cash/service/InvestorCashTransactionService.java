@@ -1,5 +1,6 @@
 package com.apec_finance.cash.service;
 
+import com.apec_finance.cash.model.CashTransactionHistory;
 import com.apec_finance.cash.model.CreateCashTransaction;
 import com.apec_finance.cash.model.VerifyCashTransaction;
 
