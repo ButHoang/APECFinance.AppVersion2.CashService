@@ -1,7 +1,6 @@
 package com.apec_finance.cash.controller;
 
 import com.apec_finance.cash.comon.ResponseBuilder;
-import com.apec_finance.cash.model.CashTransactionHistory;
 import com.apec_finance.cash.model.CreateCashTransaction;
 import com.apec_finance.cash.model.VerifyCashTransaction;
 import com.apec_finance.cash.service.InvestorCashTransactionService;
@@ -21,30 +20,6 @@ public class InvestorCashTransactionController {
     @PostMapping("/create")
     public ResponseBuilder<Void> createCashTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
         investorCashTransactionService.createCashTransaction(createCashTransaction);
-        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
-    }
-
-    @PostMapping("/verify")
-    public ResponseBuilder<Void> verifyCashTransaction(@RequestBody VerifyCashTransaction verifyCashTransaction) {
-        investorCashTransactionService.verifyCashTransaction(verifyCashTransaction);
-        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
-    }
-
-    @PostMapping("/withdrawal")
-    public ResponseBuilder<Void> createWithdrawalTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
-        investorCashTransactionService.createWithdrawalTransaction(createCashTransaction);
-        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
-    }
-
-    @PostMapping("/deposit")
-    public ResponseBuilder<Void> createDepositCashTransaction(@RequestBody CreateCashTransaction createCashTransaction) {
-        investorCashTransactionService.createDepositCashTransaction(createCashTransaction);
-        return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
-    }
-
-    @PostMapping("/history")
-    public ResponseBuilder<Void> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
-        investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", null);
     }
 
