@@ -11,7 +11,6 @@ import com.apec_finance.cash.model.VerifyCashTransaction;
 public interface InvestorCashTransactionService {
     void createCashTransaction(CreateCashTransaction createCashTransaction);
     void createWithdrawalTransaction(CreateCashTransaction createCashTransaction);
-    // void verifyCashTransaction(Long transactionId);
     void createDepositCashTransaction(CreateCashTransaction createCashTransaction);
     List<CashTransactionHistoryRes> historyCashTransaction(CashTransactionHistory cashTransactionHistory);
     void verifyCashTransaction(VerifyCashTransaction verifyCashTransaction);

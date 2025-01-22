@@ -45,7 +45,7 @@ public class InvestorCashTransactionController {
 
     @PostMapping("/history")
     public ResponseBuilder<List<CashTransactionHistoryRes>> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
-        // System.out.println(CashTransactionHistory);
+        System.out.println(CashTransactionHistory);
         List<CashTransactionHistoryRes> res =  investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", res);
     }
