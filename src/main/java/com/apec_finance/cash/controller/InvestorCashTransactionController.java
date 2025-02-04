@@ -5,6 +5,7 @@ import com.apec_finance.cash.model.CreateCashTransaction;
 import com.apec_finance.cash.model.VerifyCashTransaction;
 import com.apec_finance.cash.service.InvestorCashTransactionService;
 import com.apec_finance.cash.model.CashTransactionHistory;
+import com.apec_finance.cash.model.CashTransactionHistoryPaging;
 import com.apec_finance.cash.model.CashTransactionHistoryRes;
 
 import lombok.RequiredArgsConstructor;
@@ -42,9 +43,9 @@ public class InvestorCashTransactionController {
     }
 
     @PostMapping("/history")
-    public ResponseBuilder<List<CashTransactionHistoryRes>> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
+    public ResponseBuilder<CashTransactionHistoryPaging> historyCashTransaction(@RequestBody CashTransactionHistory CashTransactionHistory) {
         System.out.println(CashTransactionHistory);
-        List<CashTransactionHistoryRes> res = investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
+        CashTransactionHistoryPaging res = investorCashTransactionService.historyCashTransaction(CashTransactionHistory);
         return new ResponseBuilder<>(HttpStatus.OK.value(), "Success", res);
     }
 
