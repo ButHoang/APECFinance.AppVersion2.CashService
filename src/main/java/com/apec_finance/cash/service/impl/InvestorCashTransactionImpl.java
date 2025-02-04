@@ -45,7 +45,8 @@ import com.apec_finance.cash.model.RsInvestorBankAcc;
 import com.apec_finance.cash.model.RsTransactionRange;
 import com.apec_finance.cash.model.TransactionRange;
 import com.apec_finance.cash.repository.InvestorCashBalanceHistoryRepository;
-import com.apec_finance.cash.model.CashTransactionHistory;;
+import com.apec_finance.cash.model.CashTransactionHistory;
+import com.apec_finance.cash.model.CashTransactionHistoryPaging;
 
 @Service
 @RequiredArgsConstructor
@@ -202,7 +203,9 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
         investorCashTransactionRepository.save(existCashTransaction);
     }
 
-    public List<CashTransactionHistoryRes> historyCashTransaction(CashTransactionHistory cashTransactionHistory){
+    public CashTransactionHistoryPaging historyCashTransaction(CashTransactionHistory cashTransactionHistory){
+        int page = cashTransactionHistory.getPage();
+        int size = cashTransactionHistory.getSize();
         String dateStartString = cashTransactionHistory.getDateStart();
         LocalDate startDate = LocalDate.parse(dateStartString);
         String dateEndString = cashTransactionHistory.getDateEnd();
@@ -257,7 +260,17 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
     cashTransactionHistoryRes.removeIf(cashTransactionHistoryRes1 -> 
         !cashTransactionHistory.getTranType().contains(cashTransactionHistoryRes1.getTranType())
     );
-
-    return cashTransactionHistoryRes;
+    // List<CashTransactionHistoryRes> paginatedList = new ArrayList<>();
+    Long totalElements = Long.valueOf(cashTransactionHistoryRes.size());
+    Integer totalPages = (int) Math.ceil((double) totalElements / size);
+    int fromIndex = page * size;
+    int toIndex = Math.min(fromIndex + size, cashTransactionHistoryRes.size());
+    List<CashTransactionHistoryRes> paginatedList = cashTransactionHistoryRes.subList(fromIndex, toIndex);
+    CashTransactionHistoryPaging cashTransactionHistoryPaging = new CashTransactionHistoryPaging();
+    cashTransactionHistoryPaging.setContent(paginatedList);
+    cashTransactionHistoryPaging.setTotalElements(totalElements);
+    cashTransactionHistoryPaging.setTotalPages(totalPages);
+    return cashTransactionHistoryPaging;
+    
     }
 }
