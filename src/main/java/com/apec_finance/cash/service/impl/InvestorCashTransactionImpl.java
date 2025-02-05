@@ -27,6 +27,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -266,10 +267,12 @@ public class InvestorCashTransactionImpl implements InvestorCashTransactionServi
     int fromIndex = page * size;
     int toIndex = Math.min(fromIndex + size, cashTransactionHistoryRes.size());
     List<CashTransactionHistoryRes> paginatedList = cashTransactionHistoryRes.subList(fromIndex, toIndex);
+    Collections.reverse(paginatedList);
     CashTransactionHistoryPaging cashTransactionHistoryPaging = new CashTransactionHistoryPaging();
     cashTransactionHistoryPaging.setContent(paginatedList);
     cashTransactionHistoryPaging.setTotalElements(totalElements);
     cashTransactionHistoryPaging.setTotalPages(totalPages);
+
     return cashTransactionHistoryPaging;
     
     }
